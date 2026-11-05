@@ -1,0 +1,15 @@
+# Despliegue en Render (https://render.com) directamente desde GitHub.
+# La clave de la IA NO va aquí: Render te la pedirá al crear el servicio.
+services:
+  - type: web
+    name: adapticlass
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/estado
+    envVars:
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_API_KEY
+        sync: false

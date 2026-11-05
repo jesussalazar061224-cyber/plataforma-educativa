@@ -1,0 +1,8 @@
+# La clave de la IA vive aquí: NUNCA subir a GitHub
+.env
+.env.*
+!.env.example
+
+node_modules/
+.DS_Store
+Thumbs.db
