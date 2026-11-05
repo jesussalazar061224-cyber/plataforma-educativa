@@ -1,297 +1,290 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma Educativa Adaptativa</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Plataforma Educativa Adaptativa con Panel por Clases</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        dark: {
-                            bg: '#090d16',
-                            card: '#111827',
-                            border: '#1f2937'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background-color: #0b1120; color: #f1f5f9; font-family: system-ui, sans-serif; }
+        .card-custom { background-color: rgba(15, 23, 42, 0.75); border: 1px solid rgba(30, 41, 59, 0.8); backdrop-filter: blur(8px); }
+        .header-bg { background-color: rgba(3, 7, 18, 0.9); border-bottom: 1px solid rgba(30, 41, 59, 0.8); }
+        .modulo-card { border: 1px solid rgba(30, 41, 59, 0.8); background-color: rgba(15, 23, 42, 0.4); transition: all 0.2s ease-in-out; }
+        .modulo-card:hover { border-color: rgba(99, 102, 241, 0.5); background-color: rgba(30, 41, 59, 0.6); }
+    </style>
 </head>
-<body class="bg-[#090d16] text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen">
 
-    <!-- Modal de Login y Registro -->
-    <div id="modal-login" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-6">
-            <div class="text-center space-y-1">
-                <h2 class="text-xl font-bold text-white tracking-tight">Plataforma Educativa</h2>
-                <p class="text-xs text-slate-400">Accede con tus credenciales institucionales o regístrate</p>
+    <!-- MODAL DE ACCESO Y REGISTRO -->
+    <div id="modal-login" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md px-4">
+        <div class="card-custom max-w-md w-full p-8 rounded-3xl border border-indigo-500/40 shadow-2xl">
+            
+            <div class="flex justify-center gap-3 mb-6 border-b border-slate-800 pb-3 text-xs">
+                <button type="button" id="btn-tab-ingresar" class="font-bold text-indigo-400 border-b-2 border-indigo-500 pb-1 cursor-pointer">🔑 Iniciar Sesión</button>
+                <button type="button" id="btn-tab-reg-alumno" class="font-bold text-slate-400 hover:text-white pb-1 cursor-pointer">🎓 Reg. Alumno</button>
+                <button type="button" id="btn-tab-reg-docente" class="font-bold text-slate-400 hover:text-white pb-1 cursor-pointer">👨‍🏫 Reg. Docente</button>
             </div>
 
-            <!-- Tabs de Navegación -->
-            <div class="flex justify-center border-b border-slate-800 text-xs gap-6 pb-2">
-                <button type="button" id="btn-tab-ingresar" class="font-bold text-indigo-400 border-b-2 border-indigo-500 pb-1 cursor-pointer">Ingresar</button>
-                <button type="button" id="btn-tab-reg-alumno" class="font-bold text-slate-400 hover:text-white pb-1 cursor-pointer">Soy Alumno</button>
-                <button type="button" id="btn-tab-reg-docente" class="font-bold text-slate-400 hover:text-white pb-1 cursor-pointer">Soy Docente</button>
-            </div>
-
-            <!-- Formulario de Ingreso -->
-            <form id="form-login" class="space-y-4">
+            <!-- REGISTRO DE ALUMNO -->
+            <form id="form-registro-alumno" class="space-y-4 text-xs hidden">
+                <div class="text-center mb-4">
+                    <span class="text-3xl">📧</span>
+                    <h3 class="text-base font-bold text-white mt-1">Nuevo Alumno</h3>
+                    <p class="text-slate-400">Obtén tus credenciales automáticas con tu correo.</p>
+                </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Rol en la plataforma</label>
-                    <select id="login-rol" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                        <option value="alumno">Alumno</option>
-                        <option value="docente">Docente</option>
+                    <label class="block font-semibold text-slate-200 mb-1">Correo Electrónico:</label>
+                    <input type="email" id="reg-correo-alumno" placeholder="alumno@escuela.edu" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">Nombre Completo:</label>
+                    <input type="text" id="reg-nombre-alumno" placeholder="Tu Nombre y Apellidos" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer shadow-lg mt-2">
+                    Registrarme como Alumno ⚡
+                </button>
+            </form>
+
+            <!-- REGISTRO DE DOCENTE -->
+            <form id="form-registro-docente" class="space-y-4 text-xs hidden">
+                <div class="text-center mb-4">
+                    <span class="text-3xl">👨‍🏫</span>
+                    <h3 class="text-base font-bold text-white mt-1">Nuevo Docente</h3>
+                    <p class="text-slate-400">Regístrate para obtener tu cuenta exclusiva de profesor.</p>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">Correo Institucional:</label>
+                    <input type="email" id="reg-correo-docente" placeholder="profesor@escuela.edu" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">Nombre Completo:</label>
+                    <input type="text" id="reg-nombre-docente" placeholder="Prof. Nombre Apellido" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer shadow-lg mt-2">
+                    Registrarme como Docente ⚡
+                </button>
+            </form>
+
+            <!-- CREDENCIALES GENERADAS -->
+            <div id="card-credenciales-generadas" class="hidden text-xs space-y-3 bg-emerald-950/50 p-4 rounded-xl border border-emerald-500/40 text-emerald-200">
+                <h4 class="font-bold text-emerald-300 text-sm">🎉 ¡Registro Exitoso!</h4>
+                <p>Guarda tus credenciales de acceso:</p>
+                <div class="bg-slate-950 p-3 rounded-lg space-y-1 font-mono text-slate-100 border border-slate-800">
+                    <p>👤 <strong>Usuario:</strong> <span id="cred-user" class="text-indigo-400"></span></p>
+                    <p>🔑 <strong>Contraseña:</strong> <span id="cred-pass" class="text-amber-400"></span></p>
+                </div>
+                <button type="button" id="btn-ir-a-ingresar" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2 rounded-lg transition cursor-pointer mt-2">
+                    Ir a Iniciar Sesión 🚀
+                </button>
+            </div>
+
+            <!-- INICIO DE SESIÓN -->
+            <form id="form-login" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-1">Selecciona tu Rol:</label>
+                    <select id="login-rol" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500 cursor-pointer">
+                        <option value="alumno">🎓 Alumno</option>
+                        <option value="docente">👨‍🏫 Docente / Profesor</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Usuario o Correo</label>
-                    <input type="text" id="login-usuario" required placeholder="Ej. user_1234 o profe@admin.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block font-semibold text-slate-200 mb-1">Nombre de Usuario o Correo:</label>
+                    <input type="text" id="login-usuario" placeholder="Ej: user_1234 o tu correo" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Contraseña</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block font-semibold text-slate-200 mb-1">Contraseña:</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500">
                 </div>
                 <div id="grupo-codigo-clase">
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Código de Clase</label>
-                    <input type="text" id="login-codigo" placeholder="Ej. CLASE-DEMO" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 uppercase">
+                    <label class="block font-semibold text-slate-200 mb-1">Código de Clase:</label>
+                    <input type="text" id="login-codigo" placeholder="Ej: CLASE-1234" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-100 focus:outline-none focus:border-indigo-500 uppercase">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-lg shadow-indigo-600/20">Ingresar a la Plataforma</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer shadow-lg mt-2">
+                    Ingresar a la Plataforma 🚀
+                </button>
             </form>
 
-            <!-- Formulario Registro Alumno -->
-            <form id="form-registro-alumno" class="space-y-4 hidden">
-                <div class="text-xs text-indigo-400 font-medium">Registro para Estudiantes</div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Nombre Completo</label>
-                    <input type="text" id="reg-nombre-alumno" required placeholder="Tu nombre" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Correo Electrónico</label>
-                    <input type="email" id="reg-correo-alumno" required placeholder="alumno@correo.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-xs transition">Generar Cuenta de Alumno</button>
-            </form>
-
-            <!-- Formulario Registro Docente -->
-            <form id="form-registro-docente" class="space-y-4 hidden">
-                <div class="text-xs text-indigo-400 font-medium">Registro para Profesores</div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Nombre del Docente</label>
-                    <input type="text" id="reg-nombre-docente" required placeholder="Profe. Nombre" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-1">Correo Institucional</label>
-                    <input type="email" id="reg-correo-docente" required placeholder="docente@escuela.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-xs transition">Generar Cuenta de Docente</button>
-            </form>
-
-            <!-- Credenciales Generadas -->
-            <div id="card-credenciales-generadas" class="hidden space-y-3 bg-slate-950 p-4 rounded-xl border border-indigo-500/30 text-xs">
-                <div class="text-emerald-400 font-semibold">✅ ¡Cuenta creada con éxito! Guarda tus datos:</div>
-                <div class="space-y-1 font-mono text-slate-300">
-                    <div>Usuario: <span id="cred-user" class="text-indigo-400 font-bold"></span></div>
-                    <div>Contraseña: <span id="cred-pass" class="text-amber-400 font-bold"></span></div>
-                </div>
-                <button type="button" id="btn-ir-a-ingresar" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg text-xs transition mt-2 font-sans font-medium">Ir a Iniciar Sesión</button>
-            </div>
         </div>
     </div>
 
-    <!-- Modal de Test Diagnóstico Estilos de Aprendizaje -->
-    <div id="modal-test" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-5">
-            <div class="space-y-1">
-                <h2 class="text-lg font-bold text-white tracking-tight">Test Diagnóstico de Aprendizaje 🧠</h2>
-                <p class="text-xs text-slate-400">Responde estas breves preguntas para adaptar tus actividades de aprendizaje.</p>
+    <!-- MODAL DE TEST DIAGNÓSTICO -->
+    <div id="modal-test" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md px-4 hidden">
+        <div class="card-custom max-w-lg w-full p-8 rounded-3xl border border-indigo-500/40 shadow-2xl">
+            <div class="text-center mb-6">
+                <span class="text-4xl">🎯</span>
+                <h2 class="text-xl font-bold text-white mt-2">Test Diagnóstico de Aprendizaje</h2>
+                <p class="text-xs text-slate-400 mt-1">Descubriremos tu perfil óptimo para personalizar tus 10 puntos.</p>
             </div>
-            <form id="form-test" class="space-y-4 text-xs">
-                <div class="space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <label class="block font-medium text-slate-200">1. ¿Cómo prefieres resolver un problema de programación?</label>
-                    <div class="space-y-1.5 pl-2">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p1" value="practico" required class="text-indigo-600"> Escribiendo código de inmediato y probando errores (Práctico)</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p1" value="visual" class="text-indigo-600"> Viendo diagramas de flujo y esquemas visuales (Visual)</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p1" value="analitico" class="text-indigo-600"> Leyendo la documentación y analizando la teoría (Analítico)</label>
+            
+            <form id="form-test" class="space-y-5 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-2">1. ¿Cómo prefieres aprender un concepto nuevo?</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p1" value="practico" required> Con ejercicios prácticos y retos directos.</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p1" value="visual"> Viendo diagramas, esquemas o infografías.</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p1" value="analitico"> Leyendo definiciones teóricas y análisis formales.</label>
                     </div>
                 </div>
-                <div class="space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <label class="block font-medium text-slate-200">2. ¿Qué material te resulta más útil para estudiar?</label>
-                    <div class="space-y-1.5 pl-2">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p2" value="practico" required class="text-indigo-600"> Retos interactivos paso a paso</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p2" value="visual" class="text-indigo-600"> Infografías y mapas mentales</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="p2" value="analitico" class="text-indigo-600"> Ensayos y definiciones formales</label>
+                <div>
+                    <label class="block font-semibold text-slate-200 mb-2">2. ¿Qué te ayuda a recordar mejor la información?</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p2" value="practico" required> Practicándolo en la computadora.</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p2" value="visual"> Creando imágenes mentales o esquemas.</label>
+                        <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="p2" value="analitico"> Estudiando resúmenes estructurados.</label>
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl text-xs transition">Guardar mi Estilo de Aprendizaje</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition cursor-pointer shadow-lg">
+                    Generar mi Plan Personalizado 🚀
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Barra de Navegación Superior -->
-    <header class="border-b border-slate-800 bg-slate-950/60 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600/20 text-indigo-400 p-2 rounded-xl border border-indigo-500/30 font-bold text-sm">🎓 EduAdapt</div>
+    <!-- Encabezado Superior -->
+    <header class="header-bg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🚀</span>
                 <div>
-                    <h1 id="usuario-actual-txt" class="text-xs font-semibold text-white">Cargando usuario...</h1>
-                    <p id="clase-actual-txt" class="text-[10px] text-slate-400 font-mono">Clase: --</p>
+                    <h1 class="text-xl font-bold text-white tracking-wide">Aprende a tu Ritmo</h1>
+                    <p class="text-xs text-slate-400">Usuario: <strong id="usuario-actual-txt" class="text-indigo-400">Invitado</strong> | Clase: <strong id="clase-actual-txt" class="text-emerald-400">GENERAL</strong></p>
                 </div>
             </div>
 
-            <!-- Casilla Configuración API Key OpenRouter y Cerrar Sesión -->
-            <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-xs">
-                    <span class="text-slate-400 font-medium">OpenRouter Key:</span>
-                    <input type="password" id="input-user-api-key" placeholder="sk-or-v1-..." class="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white text-[11px] focus:outline-none focus:border-indigo-500 w-32">
-                    <button type="button" onclick="guardarUserApiKey()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded text-[11px] font-medium transition">Guardar</button>
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="bg-indigo-500/10 border border-indigo-500/30 px-3 py-2 rounded-xl text-xs text-indigo-300" id="contenedor-perfil-badge">
+                    Perfil: <strong id="perfil-activo-txt" class="text-white uppercase">PRÁCTICO</strong>
                 </div>
 
-                <div id="contenedor-perfil-badge" class="hidden bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2">
-                    <span class="text-slate-400">Estilo:</span>
-                    <span id="perfil-activo-txt" class="text-indigo-400 font-bold uppercase">--</span>
-                </div>
-                <button type="button" id="btn-cambiar-usuario" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs transition">Cambiar de Cuenta</button>
+                <button id="btn-cambiar-usuario" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded-xl transition cursor-pointer border border-slate-700">
+                    🔄 Cerrar Sesión
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Contenedor Principal -->
-    <main class="max-w-7xl mx-auto p-4 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-        <!-- Panel de Alumno (Módulos y Actividades) -->
-        <section class="lg:col-span-8 space-y-6">
-            
-            <!-- Barra de Progreso General -->
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 space-y-2">
-                <div class="flex justify-between items-center text-xs">
-                    <span class="font-medium text-slate-300">Progreso de la Asignatura</span>
-                    <span id="porcentaje-texto" class="text-indigo-400 font-bold">0%</span>
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Panel Izquierdo -->
+        <section class="lg:col-span-1 space-y-6">
+            <div class="card-custom rounded-2xl p-6">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">TU PROGRESO AUTOMÁTICO</h2>
+                <div class="w-full bg-slate-800 rounded-full h-2.5 mb-3 overflow-hidden">
+                    <div id="barra-progreso" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
-                <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
-                    <div id="barra-progreso" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-                <div class="text-[10px] text-slate-400 text-right"><span id="puntos-completados">0</span> puntos completados con evidencia aprobada/pendiente</div>
-            </div>
-
-            <!-- Listado de Módulos (Temas) -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="lista-modulos">
-                <!-- Se inyecta dinámicamente -->
-            </div>
-
-            <!-- Contenido Adaptativo Actual -->
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div>
-                        <span id="tag-modulo" class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-lg font-semibold uppercase">Módulo 1</span>
-                        <h2 id="titulo-modulo" class="text-base font-bold text-white mt-1">Cargando actividades...</h2>
-                    </div>
-                </div>
-
-                <div id="contenido-adaptativo" class="space-y-3">
-                    <!-- Se inyectan las actividades y botones de subida (PNG, JPG, PDF) -->
+                <div class="flex justify-between text-xs text-slate-300">
+                    <span>Puntos entregados: <strong id="puntos-completados" class="text-white">0</strong>/10</span>
+                    <span id="porcentaje-texto" class="font-bold text-emerald-400">0%</span>
                 </div>
             </div>
 
+            <div class="card-custom rounded-2xl p-6">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">MÓDULOS DE LA CLASE</h2>
+                <div id="lista-modulos" class="space-y-3"></div>
+            </div>
         </section>
 
-        <!-- Sidebar / Panel de Tutor IA y Asistente -->
-        <aside class="lg:col-span-4 space-y-6">
+        <!-- Panel Central y Derecho -->
+        <section class="lg:col-span-2 space-y-6">
             
-            <!-- Chat de Tutoría IA -->
-            <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col h-[460px]">
-                <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-3">
-                    <div class="bg-emerald-500/20 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/30 text-xs">🤖</div>
+            <!-- PANEL DOCENTE -->
+            <div id="panel-docente" class="card-custom rounded-2xl p-6 border-indigo-500/50 bg-slate-900/95 hidden space-y-6">
+                <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                    <h3 class="font-bold text-white flex items-center gap-2 text-sm text-indigo-400">
+                        <span>👨‍🏫</span> Panel de Control y Supervisión por Clases
+                    </h3>
+                </div>
+
+                <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-2">🔑 Crear Nueva Clase y Código</h4>
+                    <form id="form-crear-clase" class="space-y-3">
+                        <div class="flex gap-2">
+                            <input type="text" id="input-nombre-clase" placeholder="Nombre de la Clase (Ej: Matemáticas)" required
+                                class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg transition cursor-pointer">
+                                Generar 🎫
+                            </button>
+                        </div>
+                    </form>
+                    <div id="resultado-codigo-clase" class="mt-3 hidden p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-lg text-emerald-300 flex justify-between items-center">
+                        <span>Código creado: <strong id="txt-codigo-generado" class="text-white text-sm"></strong></span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-2">✨ Cargar Tema y Generar Plan IA (10 Puntos)</h4>
+                    <form id="form-nuevo-tema" class="space-y-3">
+                        <input type="text" id="input-codigo-asociado" placeholder="Código de Clase (Ej: CLASE-1234)" required
+                            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 uppercase focus:outline-none">
+                        <input type="text" id="input-titulo-tema" placeholder="Título del Tema (Ej: Redes Inalámbricas)" required
+                            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg transition cursor-pointer">
+                            + Generar 10 Puntos con IA
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-2">👥 Alumnos Registrados</h4>
+                    <div id="contenedor-alumnos-registrados" class="space-y-2 max-h-40 overflow-y-auto">
+                        <p class="text-slate-400 text-xs">No hay alumnos registrados todavía.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-2">📂 Buzón de Evidencias Separadas por Clase</h4>
+                    <p class="text-slate-400 text-xs mb-3">Haz clic en una clase para desplegar la tabla de evidencias enviadas por los alumnos.</p>
+                    <div id="contenedor-clases-buzon" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Módulo en curso -->
+            <div class="card-custom rounded-2xl p-6 min-h-[400px]">
+                <div class="flex justify-between items-start mb-6">
                     <div>
-                        <h3 class="text-xs font-bold text-white">Tutor IA Adaptativo</h3>
-                        <p class="text-[10px] text-slate-400">Resuelve cualquier duda sobre tu ruta</p>
+                        <span id="tag-modulo" class="text-xs font-semibold px-3 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Módulo 1</span>
+                        <h2 id="titulo-modulo" class="text-2xl font-bold text-white mt-3">Cargando actividades...</h2>
                     </div>
                 </div>
 
-                <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 pr-2 text-xs">
-                    <div class="bg-slate-900 p-3 rounded-xl text-slate-300 border border-slate-800">
-                        <strong class="text-emerald-400">Tutor IA:</strong> ¡Hola! Estoy adaptado a tu estilo de aprendizaje. ¿En qué puedo ayudarte con tus actividades?
+                <div id="contenido-adaptativo" class="space-y-4"></div>
+            </div>
+
+            <!-- Tutor IA -->
+            <div class="card-custom rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-white flex items-center gap-2 text-sm">
+                        <span>🤖</span> Tutor IA Personalizado
+                    </h3>
+                    <span class="text-xs text-slate-400">Resuelve cualquier duda</span>
+                </div>
+
+                <div id="chat-box" class="h-40 overflow-y-auto space-y-3 p-4 bg-slate-950/60 rounded-xl mb-4 border border-slate-800/80 text-xs">
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-slate-300 max-w-[85%] leading-relaxed">
+                        👋 ¡Hola! Sube tus evidencias en formato PNG o JPG y consulta tus dudas con el tutor IA.
                     </div>
                 </div>
 
-                <form id="chat-form" class="mt-3 flex gap-2 pt-2 border-t border-slate-800">
-                    <input type="text" id="chat-input" placeholder="Pregunta sobre la actividad..." class="flex-grow bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs transition font-medium">Enviar</button>
+                <form id="chat-form" class="flex gap-3">
+                    <input type="text" id="chat-input" placeholder="Ej: ¿Cómo debo resolver este punto?" required
+                        class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-xs font-medium transition cursor-pointer">
+                        Enviar
+                    </button>
                 </form>
             </div>
-
-        </aside>
-
-        <!-- PANEL DOCENTE (Se muestra solo si el rol es docente) -->
-        <section id="panel-docente" class="lg:col-span-12 space-y-6 hidden border-t border-slate-800 pt-6">
-            <div class="bg-indigo-950/20 border border-indigo-500/30 p-6 rounded-2xl space-y-6">
-                <div class="border-b border-indigo-500/20 pb-4">
-                    <h2 class="text-lg font-bold text-white flex items-center gap-2">👨‍🏫 Panel de Control Docente y Gestión Jerárquica</h2>
-                    <p class="text-xs text-slate-400 mt-1">Crea clases, edita temas, administra actividades en vivo y revisa las evidencias de tus alumnos.</p>
-                </div>
-
-                <!-- Formularios de Gestión Docente -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Crear Clase -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="text-white font-semibold text-xs">1. Crear Nueva Clase</h3>
-                        <form id="form-crear-clase" class="space-y-3">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">Nombre de la Clase</label>
-                                <input type="text" id="input-nombre-clase" required placeholder="Ej. Programación Web Avanzada" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg text-xs font-medium transition">Crear y Generar Código</button>
-                        </form>
-                        <div id="resultado-codigo-clase" class="hidden text-xs bg-slate-950 p-2.5 rounded border border-emerald-500/30 text-emerald-400 font-mono">
-                            Código generado: <span id="txt-codigo-generado" class="font-bold text-white"></span>
-                        </div>
-                    </div>
-
-                    <!-- Crear Tema / Módulo -->
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="text-white font-semibold text-xs">2. Agregar Módulo / Tema con IA</h3>
-                        <form id="form-nuevo-tema" class="space-y-3">
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">Código de Clase Asociado</label>
-                                <input type="text" id="input-codigo-asociado" required placeholder="Ej. CLASE-DEMO" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white uppercase focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 mb-1">Título del Tema</label>
-                                <input type="text" id="input-titulo-tema" required placeholder="Ej. Estructuras de Datos Avanzadas" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg text-xs font-medium transition">Generar e Insertar 10 Puntos IA</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Alumnos Registrados y Buzón de Evidencias -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="text-white font-semibold text-xs">👥 Alumnos Registrados en el Sistema</h3>
-                        <div id="contenedor-alumnos-registrados" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                            <!-- Se inyectan alumnos -->
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="text-white font-semibold text-xs">📥 Buzón de Evidencias por Clase (PNG, JPG, PDF)</h3>
-                        <div id="contenedor-clases-buzon" class="space-y-3 max-h-60 overflow-y-auto pr-1">
-                            <!-- Se inyectan las tablas por clase -->
-                        </div>
-                    </div>
-                </div>
-
-            </div>
         </section>
-
     </main>
 
-    <!-- Archivo JavaScript Principal -->
     <script src="app.js"></script>
 </body>
 </html>
