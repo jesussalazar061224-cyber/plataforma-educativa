@@ -1,9 +1,28 @@
 /**
- * Plataforma Educativa Adaptativa Completa (Soporte PNG, JPG, PDF + Panel Jerárquico Editable)
+ * Plataforma Educativa Adaptativa Completa (Soporte PNG, JPG, PDF + Panel Jerárquico Editable + Key Personalizada)
  */
 
-// Dejamos la clave vacía para no exponer secretos en GitHub
+// Clave global por defecto (vacía para evitar bloqueos en GitHub)
 const OPENROUTER_API_KEY = ""; 
+
+// Función para guardar la API Key del usuario en localStorage
+function guardarUserApiKey() {
+    const input = document.getElementById("input-user-api-key");
+    if (!input) return;
+    const key = input.value.trim();
+    if (!key.startsWith("sk-or-")) {
+        alert("⚠️ Asegúrate de que tu API Key de OpenRouter comience con 'sk-or-' y sea válida.");
+        return;
+    }
+    localStorage.setItem("user_openrouter_api_key", key);
+    alert("✅ API Key guardada de forma segura en tu navegador.");
+}
+
+// Función auxiliar para obtener la llave activa (prioriza la del usuario, si no usa la global)
+function obtenerApiKeyActiva() {
+    const keyLocal = localStorage.getItem("user_openrouter_api_key");
+    return keyLocal || OPENROUTER_API_KEY;
+}
 
 let usuariosRegistradosDB = JSON.parse(localStorage.getItem("usuarios_registrados_db")) || [
     {
@@ -81,6 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarRegistros();
     configurarRolesLogin();
     verificarSesion();
+    
+    // Cargar API Key previa en el input si existe
+    const inputKey = document.getElementById("input-user-api-key");
+    if (inputKey && localStorage.getItem("user_openrouter_api_key")) {
+        inputKey.value = localStorage.getItem("user_openrouter_api_key");
+    }
 });
 
 function configurarTabsLoginRegistro() {
@@ -796,8 +821,9 @@ function toggleTablaClase(codigoClase) {
 }
 
 async function generarPuntosIA(tema, estilo) {
-    if (!OPENROUTER_API_KEY) {
-        return Array.from({length: 10}, (_, i) => `${i+1}. Punto para ${tema} (${estilo})`);
+    const apiKeyUsar = obtenerApiKeyActiva();
+    if (!apiKeyUsar) {
+        return Array.from({length: 10}, (_, i) => `${i+1}. Punto generado para ${tema} (${estilo}) - [Configura tu API Key en la barra superior para usar IA en vivo]`);
     }
     try {
         const url = "https://openrouter.ai/api/v1/chat/completions";
@@ -805,7 +831,7 @@ async function generarPuntosIA(tema, estilo) {
 
         const response = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENROUTER_API_KEY}` },
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKeyUsar}` },
             body: JSON.stringify({ model: "openrouter/free", messages: [{ role: "user", content: prompt }] })
         });
         const data = await response.json();
@@ -840,13 +866,14 @@ function configurarChat() {
 }
 
 async function consultarOpenRouterAPI(pregunta, estilo) {
-    if (!OPENROUTER_API_KEY) {
-        return "Para usar las respuestas en vivo de OpenRouter debes configurar tu API Key de forma privada.";
+    const apiKeyUsar = obtenerApiKeyActiva();
+    if (!apiKeyUsar) {
+        return "⚠️ Por favor ingresa y guarda tu API Key de OpenRouter en la barra superior de la página para activar las respuestas en vivo.";
     }
     const url = "https://openrouter.ai/api/v1/chat/completions";
     const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${OPENROUTER_API_KEY}` },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKeyUsar}` },
         body: JSON.stringify({
             model: "openrouter/free",
             messages: [{ role: "system", content: `Tutor IA experto en estilo ${estilo}.` }, { role: "user", content: pregunta }]
@@ -863,7 +890,7 @@ function agregarMensajeChat(autor, texto) {
     const msgDiv = document.createElement("div");
     msgDiv.id = `msg-${contadorMensajes++}`;
     const esUsuario = autor === "Usuario";
-    msgDiv.className = esUsuario ? "bg-indigo-600/35 p-3 rounded-xl text-slate-100 max-w-[85%] ml-auto text-right text-xs" : "bg-slate-900 p-3 rounded-xl text-slate-300 max-w-[85%] text-xs";
+    msgDiv.className = esUsuario ? "bg-indigo-600/35 p-3 rounded-xl text-slate-100 max-w-[85%] ml-auto text-right text-xs" : "bg-slate-900 p-3 rounded-xl text-slate-300 max-w-[85%] text-xs border border-slate-800";
     msgDiv.innerHTML = `<strong class="${esUsuario ? 'text-indigo-300' : 'text-emerald-400'}">${autor}:</strong> ${texto}`;
     chatBox.appendChild(msgDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
